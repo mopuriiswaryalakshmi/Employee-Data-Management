@@ -1,0 +1,466 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+      "version": "1.0.0",
+      "title": "Employee Management",
+      "license": {
+        "name": ""
+      }
+    },
+    "servers": [
+      {
+        "url": "{protocol}://{host}:{port}/api/v1",
+        "variables": {
+          "protocol": {
+            "default": "http",
+            "enum": ["http", "https"]
+          },
+          "port": {
+            "enum": ["8000"],
+            "default": "8000"
+          },
+          "host": {
+            "default": "localhost:8000",
+            "enum": ["localhost"]
+          }
+        }
+      }
+    ],
+    "security": [
+      {
+        "bearerAuth": []
+      }
+    ],
+    "paths": {
+      "/employee": {
+        "post": {
+          "summary": "Create Employee Record",
+          "operationId": "createEmployeeId",
+          "tags": ["Employee"],
+          "requestBody": {
+            "description": "This api will allow to create Employee records.",
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmployeeRequest"
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": "Success response with Endpoint.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/EmployeeResponse"
+                  }
+                }
+              }
+            },
+            "409": {
+              "description": "Failure response with status as false and conflict error",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ConflictError"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Failure response with status as false and error from backend",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/InternalServerError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/employee/{employeCode}": {
+        "get": {
+          "summary": "Get Employee Details",
+          "operationId": "Get Employee By Code",
+          "tags": ["Employee"],
+          "parameters": [
+            {
+              "in": "header",
+              "name": "Content-Type",
+              "description": "Content type of the body, should always be set to application/json unless specified otherwise.",
+              "schema": {
+                "type": "string",
+                "example": "application/json"
+              },
+              "required": true
+            },
+            {
+              "name": "employeeCode",
+              "in": "path",
+              "required": true,
+              "description": "The code of the employee to update.",
+              "schema": {
+                "type": "string",
+                "format": "hex"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Success response with status as true and data set to the updated.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/getEmployeeDetailsResponse"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Failure response with status as false and error of Not Found.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/NotFoundResponse"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "Failure message with status as false and error from backend.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/InternalServerError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "components": {
+      "securitySchemes": {
+        "bearerAuth": {}
+      },
+      "schemas": {
+        "AuthResponse": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "boolean",
+              "default": true,
+              "example": true
+            }
+          },
+          "required": ["status", "token"]
+        },
+        "Employee": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string",
+              "format": "hex",
+              "example": "5c188d0377ebe21d86dc4fe1"
+            },
+            "firstName": {
+              "type": "string",
+              "example": "alias"
+            },
+            "lastName": {
+              "type": "string",
+              "example": "ali"
+            },
+            "email": {
+              "type": "string",
+              "example": "alias@yopmail.com"
+            },
+            "phoneNumber": [{
+              "type": "string",
+              "example": "1234567890"
+            }],
+            "dateOfJoining": {
+              "type": "Date",
+              "example": "month/day/year"
+            },
+            "salary": {
+              "type": "string",
+              "example": "50000"
+            }
+          }
+        },
+        "EmployeeRequest": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string",
+              "format": "hex",
+              "example": "5c188d0377ebe21d86dc4fe1"
+            },
+            "firstName": {
+              "type": "string",
+              "example": "alias"
+            },
+            "lastName": {
+              "type": "string",
+              "example": "ali"
+            },
+            "email": {
+              "type": "string",
+              "example": "alias@yopmail.com"
+            },
+            "phoneNumber": [{
+              "type": "string",
+              "example": "1234567890"
+            }],
+            "dateOfJoining": {
+              "type": "Date",
+              "example": "month/day/year"
+            },
+            "salary": {
+              "type": "string",
+              "example": "50000"
+            }
+          },
+          "required": ["code", "firstName", "lastName", "email", "phoneNumber", "dateOfJoining", "salary" ]
+        },
+        "EmployeeResponse": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "boolean",
+              "default": true,
+              "example": true
+            },
+            "data": {
+              "type": "object",
+                "properties": {
+                    "code": {
+                      "type": "string",
+                      "format": "hex",
+                      "example": "5c188d0377ebe21d86dc4fe1"
+                    },
+                    "firstName": {
+                      "type": "string",
+                      "example": "alias"
+                    },
+                    "lastName": {
+                      "type": "string",
+                      "example": "ali"
+                    },
+                    "email": {
+                      "type": "string",
+                      "example": "alias@yopmail.com"
+                    },
+                    "phoneNumber": [{
+                      "type": "string",
+                      "example": "1234567890"
+                    }],
+                    "dateOfJoining": {
+                      "type": "Date",
+                      "example": "month/day/year"
+                    },
+                    "salary": {
+                      "type": "string",
+                      "example": "50000"
+                    }
+                  }
+            }
+          }
+        },
+        "getEmployeeDetailsResponse": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "boolean",
+              "default": true,
+              "example": true
+            },
+            "data": {
+                "type": "object",
+                  "properties": {
+                      "employeeCode": {
+                        "type": "string",
+                        "format": "hex",
+                        "example": "5c188d0377ebe21d86dc4fe1"
+                      },
+                      "firstName": {
+                        "type": "string",
+                        "example": "alias"
+                      },
+                      "lastName": {
+                        "type": "string",
+                        "example": "ali"
+                      },
+                      "yearlySalary": {
+                        "type": "string",
+                        "example": "689000"
+                      },
+                      "taxAmount": {
+                        "type": "string",
+                        "example": "2500"
+                      },
+                      "cessAmount": {
+                        "type": "string",
+                        "example": "1500"
+                      }
+                    }
+                }
+          }
+        },
+        "BadRequestResponse": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "boolean",
+              "example": false
+            },
+            "error": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "BadRequestError"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Bad request bro"
+                }
+              }
+            }
+          }
+        },
+        "NotFoundResponse": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "boolean",
+              "default": false,
+              "example": false
+            },
+            "error": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "NotFoundError"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Entity not found."
+                }
+              },
+              "required": ["error", "message"]
+            }
+          },
+          "required": ["status", "error"]
+        },
+        "ConflictError": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "boolean",
+              "default": false,
+              "example": false
+            },
+            "error": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ConflictError"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "This operations produces conflicts with the current state."
+                }
+              },
+              "required": ["error", "message"]
+            }
+          },
+          "required": ["status", "error"]
+        },
+        "UnauthorizedError": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "boolean",
+              "default": false,
+              "example": false
+            },
+            "error": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "UnauthorizedError"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Invalid Token."
+                }
+              },
+              "required": ["error", "message"]
+            }
+          },
+          "required": ["status", "error"]
+        },
+        "ForbiddenError": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "boolean",
+              "default": false,
+              "example": false
+            },
+            "error": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "ForbiddenError"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "You are not allowed to call this API"
+                }
+              },
+              "required": ["error", "message"]
+            }
+          },
+          "required": ["status", "error"]
+        },
+        "InternalServerError": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "boolean",
+              "default": false,
+              "example": false
+            },
+            "error": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "example": "TypeError"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Cannot cast date to integer."
+                }
+              },
+              "required": ["error", "message"]
+            }
+          },
+          "required": ["status", "error"]
+        }
+      }
+    }
+  }
+  
